@@ -5,7 +5,8 @@ require('../model/event');
 const eventModel = mongoose.model('event')
 
 module.exports.index=async(req,res)=>{
-    const events =await eventModel.find({}); 
+    const events =await eventModel.find({})   ;
+    console.log(events)   ;
     res.render('index', { title: 'All Events', events :events });
 }
 
@@ -39,7 +40,7 @@ module.exports.editGet=async(req,res)=>{
     const event =await eventModel.findOne({_id:id});
     date = moment(event.date).format('YYYY-MM-DD');
     
-    console.log(event.date);
+    console.log(date);
     res.render('editEvent', { title: 'Update Event', event:event,date:date });
 }
 
@@ -58,14 +59,14 @@ module.exports.updatePost=async(req,res)=>{
         });
         /*=====================================*/
        }
-    const event =await eventModel.findByIdAndUpdate({
-        _id:id
-    },{
-        name: req.body.name,
-        date: req.body.date,
-        image: image
-    });
- 
+     if(image == ''){
+        var data = { name: req.body.name, date: req.body.date}
+       
+     }else{
+        var data = { name: req.body.name, date: req.body.date, image: image }
+     }  
+    
+    const event =await eventModel.findByIdAndUpdate(id,data); 
 
    res.redirect('/');
 }
@@ -73,6 +74,6 @@ module.exports.updatePost=async(req,res)=>{
 module.exports.delete=async(req,res,next)=>{
      var id = req.params.id;
      console.log(id);
-     const event =await eventModel.findByIdAndRemove({_id:id})
+     const event =await eventModel.findByIdAndRemove(id)
      next();
 }
